@@ -25,260 +25,199 @@ const float pi = acos(-1.);
 const vec3 c = vec3(1.0, 0.0, -1.0);
 float a = 1.0, ry = 1.0;
 
-// Hash function
-void rand(in vec2 x, out float num)
+void rand(in vec2 x, out float n)
 {
     x += 400.;
-    num = fract(sin(dot(sign(x)*abs(x) ,vec2(12.9898,78.233)))*43758.5453);
+    n = fract(sin(dot(sign(x)*abs(x) ,vec2(12.9898,78.233)))*43758.5453);
 }
 
-// 2D box
-void dbox2(in vec2 x, in vec2 b, out float d)
+void lfnoise(in vec2 t, out float n)
 {
-	vec2 da = abs(x)-b;
-	d = length(max(da,c.yy)) + min(max(da.x,da.y),0.0);
+    vec2 i = floor(t);
+    t = fract(t);
+    t = smoothstep(c.yy, c.xx, t);
+    vec2 v1, v2;
+    rand(i, v1.x);
+    rand(i+c.xy, v1.y);
+    rand(i+c.yx, v2.x);
+    rand(i+c.xx, v2.y);
+    v1 = c.zz+2.*mix(v1, v2, t.y);
+    n = mix(v1.x, v1.y, t.x);
 }
 
-// Simple numbers
-void dnumber(in vec2 x, in int number, in vec2 size, out float d)
+void mfnoise(in vec2 x, in float d, in float b, in float e, out float n)
 {
-    if(number == 0)
+    n = 0.;
+    float a = 1., nf = 0., buf;
+    for(float f = d; f<b; f *= 2.)
     {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x, vec2(.4,.6)*size, da);
-        d = max(d, -da);
+        lfnoise(f*x, buf);
+        n += a*buf;
+        a *= e;
+        nf += 1.;
     }
-    else if(number == 1)
-    {
-        dbox2(x,vec2(.4,1.)*size, d);
-    }
-    else if(number == 2)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x+vec2(.3,-.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(x-vec2(.3,-.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 3)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x+vec2(.3,-.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(x+vec2(.3,.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 4)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x-vec2(0.,.6)*size, vec2(.5,.5)*size, da);
-        d = max(d, -da);
-    	dbox2(x-vec2(-.3,-.7)*size, vec2(.8,.4)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 5)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x+vec2(.3,.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(x-vec2(.3,.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 6)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x+vec2(0.,.4)*size, vec2(.5,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(x-vec2(.3,.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 7)
-    {
-        dbox2(x, size, d);
-        float da;
-    	dbox2(x-vec2(-.3,-.3)*size, vec2(.8,.9)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 8)
-    {
-        dbox2(x, size, d);
-        float da;
-        dbox2(x+vec2(0.,.4)*size, vec2(.5,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(x-vec2(0.,.4)*size, vec2(.5,.2)*size, da);
-        d = max(d, -da);
-    }
-    else if(number == 9)
-    {
-        dbox2(-x, size, d);
-        float da;
-        dbox2(-x+vec2(0.,.4)*size, vec2(.5,.2)*size, da);
-        d = max(d, -da);
-    	dbox2(-x-vec2(.3,.4)*size, vec2(.8,.2)*size, da);
-        d = max(d, -da);
-    }
+    n *= (1.-e)/(1.-pow(e, nf));
 }
 
-// Convert progress to %.2d
-void dprogress(in vec2 x, in vec2 size, out float d)
+//distance to spline with parameter t
+float dist2(vec2 p0,vec2 p1,vec2 p2,vec2 x,float t)
 {
-    int n = int(floor(10.*clamp(iProgress,0.,.9999)));
-    dnumber(x, n, size, d);
-    float da;
-    n = int(floor(100.*clamp(iProgress,0.,.9999))) - 10 * n;
-    dnumber(x-2.1*size.x*c.xy, n, size, da);
-    d = min(d,da);
+    t = clamp(t, 0., 1.);
+    return length(x-pow(1.-t,2.)*p0-2.*(1.-t)*t*p1-t*t*p2);
 }
 
-void dteam210(in vec2 x, in float size, out float d)
+//minimum dist3ance to spline
+void dspline2(in vec2 x, in vec2 p0, in vec2 p1, in vec2 p2, out float ds)
 {
-    dbox2(x, vec2(.2,1.)*size, d);
-    d = min(d, abs(length(x-vec2(.8,0.)*size)-.8*size)-.2*size);
-    d = min(d, abs(length(x+vec2(.8,0.)*size)-.8*size)-.2*size);
-    float da;
-    dbox2(x+2.85*size*c.xy,2.*vec2(size), da);
-    d = max(d,-da);
+    //coefficients for 0 = t^3 + a * t^2 + b * t + c
+    vec2 E = x-p0, F = p2-2.*p1+p0, G = p1-p0;
+    vec3 ai = vec3(3.*dot(G,F), 2.*dot(G,G)-dot(E,F), -dot(E,G))/dot(F,F);
+
+	//discriminant and helpers
+    float tau = ai.x/3., p = ai.y-tau*ai.x, q = - tau*(tau*tau+p)+ai.z, dis = q*q/4.+p*p*p/27.;
+    
+    //triple real root
+    if(dis > 0.) 
+    {
+        vec2 ki = -.5*q*c.xx+sqrt(dis)*c.xz, ui = sign(ki)*pow(abs(ki), c.xx/3.);
+        ds = dist2(p0,p1,p2,x,ui.x+ui.y-tau);
+        return;
+    }
+    
+    //three dist3inct real roots
+    float fac = sqrt(-4./3.*p), arg = acos(-.5*q*sqrt(-27./p/p/p))/3.;
+    vec3 t = c.zxz*fac*cos(arg*c.xxx+c*pi/3.)-tau;
+    ds = min(
+        dist2(p0,p1,p2,x, t.x),
+        min(
+            dist2(p0,p1,p2,x,t.y),
+            dist2(p0,p1,p2,x,t.z)
+        )
+    );
 }
 
-// compute distance to regular triangle
-void dtriangle2(in vec2 uv, in float r, out float d)
+void dlinesegment2(in vec2 x, in vec2 p1, in vec2 p2, out float d)
 {
-    float dp = 2.*pi/3.;
-    vec2 p0 = r*vec2(cos(pi/2.), -sin(pi/2.)),
-        p1 = r*vec2(cos(pi/2.+dp), -sin(pi/2.+dp)),
-        p2 = r*vec2(cos(pi/2.+2.*dp), -sin(pi/2.+2.*dp)), 
-        pd = p2-p1;
-    
-    d = min(dot(uv-p0,c.xz*(p1-p0).yx),dot(uv-p1, pd.yx*c.xz));
-	d = min(d, dot(uv-p2, (p0-p2).yx*c.xz))/length(pd);
+    vec2 da = p2-p1;
+    d = length(x-mix(p1, p2, clamp(dot(x-p1, da)/dot(da,da),0.,1.)));
 }
 
-// distance to gear
-void dgear(in vec2 x, in vec2 r, in float n, out float d)
+void dcircle(in vec2 x, in float R, out float d)
 {
-    float p = atan(x.y,x.x);
-    p = mod(p, 2.*pi/n)*n/2./pi;
-    d = mix(length(x)-r.x, length(x)-r.y, step(p,.5));
+    d = length(x)-R;
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+// Stroke
+void stroke(in float d0, in float s, out float d)
 {
-    a = iResolution.x/iResolution.y;
-    ry = 1.5/iResolution.y;
-    vec2 uv = fragCoord/iResolution.yy-0.5*vec2(a, 1.0);
-    vec3 col = c.yyy;
+    d = abs(d0)-s;
+}
+
+void smoothmin(in float a, in float b, in float k, out float dst)
+{
+    float h = max( k-abs(a-b), 0.0 )/k;
+    dst = min( a, b ) - h*h*h*k*(1.0/6.0);
+}
+
+void colorize(in vec2 x, out vec3 col)
+{
+    vec2 dsx = vec2(x.x, x.y);
+    vec3 bcol = vec3(0.99,0.63,0.11),
+        gray = vec3(0.62,0.59,0.48),
+        lightgray = vec3(0.83,0.82,0.77),
+        beer = mix(vec3(0.99,0.80,0.00), vec3(0.97,0.65,0.09), (.5+.5*x.y)/.8),
+        lightbeer = mix(vec3(1.00,0.87,0.07), vec3(1.00,0.98,0.76), (.5+.5*x.y)/.8);
     
-    // Progress text
-    float d, v;
-    dprogress(uv+.51*c.xy, vec2(.03,.04), d);
-    col = mix(col,vec3(0.75,0.20,0.26), smoothstep(ry, -ry, d));
+    // bubbles
+    float dc = 1.;
+    for(int i=0; i<200; ++i)
+    {
+        float index = float(i);
+        vec2 dx;
+        rand(index*c.xx, dx.x);
+        rand(index*c.xx-1338., dx.y);
+        float dd;
+        dcircle(mod(.5+x-vec2(.2,.5)*mix(-c.xx,c.xx,dx)-1.*iProgress*c.yx,1.)-.5, .03*dx.x, dd);
+        
+        smoothmin(dc, dd, .02, dc);
+    }
+    float ddc;
+    stroke(dc, .002, ddc);
+    beer = mix(beer, vec3(0.73,0.47,0.00), smoothstep(ry, -ry, ddc));
+    beer = mix(beer, vec3(0.98,0.78,0.07), smoothstep(ry, -ry, dc+.005));
     
-    // Bar outline
-    dbox2(uv, vec2(.4,.04), d);
-    d = abs(d)-.002;
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry, -ry, d));
+    float d, da, db, dhandle, dbeer;
+    dlinesegment2(vec2(.5,1.)*x, .25*c.yz, .25*c.yx, d);
+    stroke(d, .1, d);
+    dspline2(x, vec2(.2,-.15), vec2(.35,-.1)+.1*c.yz, vec2(.35,.05), da);
+    dspline2(x, vec2(.35,.05), vec2(.35, .15), vec2(.2,.15), db);
+    da = min(da, db);
+    dhandle = da;
+    stroke(da, .04, da);
+  	smoothmin(d, da, .05, d);
+    col = mix(col, bcol, smoothstep(ry, -ry, d));
+    stroke(dhandle, .03, da);
+    col = mix(col, gray, smoothstep(ry, -ry, d+.01));
+    stroke(dhandle, .025, da);
+    col = mix(col, lightgray, smoothstep(ry, -ry, da));
+    stroke(dhandle, .005, da);
+    col = mix(col, c.xxx, smoothstep(ry, -ry, da));
     
-    // Bar content
-    dbox2(uv+(.42-.42*clamp(iProgress,0.,.9999))*c.xy, vec2(clamp(iProgress,0.,.9999)*.42,.06), d);
-    vec3 fc = vec3(0.76,0.20,0.25);
-    col = mix(col, fc, smoothstep(ry, -ry, d+.03));
+    dspline2(x, vec2(-.15,-.27), vec2(0.,-.36), vec2(.15,-.27), da);
     
-    // 210 Logo
-    dteam210(uv-.13*c.yx+.025*c.xy-(-.42+.84*clamp(iProgress,0.,.9999))*c.xy, .05, d);
-    col = mix(col, vec3(0.24,0.24,0.24), smoothstep(ry,-ry,d));
-    d = abs(d-.01)-.002;
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry,d));
+    dlinesegment2(vec2(.5,1.)*x, .25*c.yz, .25*c.yx, dbeer);
+    stroke(dbeer, .095, dbeer);
+    col = mix(col, beer, smoothstep(ry,-ry,dbeer));
     
-    // Red progress triangle
-    dtriangle2(uv-.055*c.yx+.025*c.xy-(-.42+.84*clamp(iProgress,0.,.9999))*c.xy, .01, d);
-    col = mix(col, vec3(0.76,0.20,0.25), smoothstep(ry,-ry, -d));
+    // stripes
+    dlinesegment2(vec2(.5,1.)*vec2(abs(x.x-.03)-.1,x.y)-.4*abs(x.x)*c.yx, -.3*c.yx, .25*c.yx, dbeer);
+    stroke(dbeer, .015, dbeer);
+    col = mix(col, lightbeer, smoothstep(ry,-ry,dbeer));
     
-    // Upper phone task bar background
-    dbox2(uv-.475*c.yx, vec2(a,.025), d);
-    col = mix(col, vec3(0.24,0.24,0.24), smoothstep(ry,-ry, d));
+    stroke(da, .02, db);
+    col = mix(col, lightgray, smoothstep(ry, -ry, db));
     
-    // Attention sign
-    dtriangle2((uv-vec2(-.48*a,.47))*c.xz, .025, d);
-    d = -d;
-    dbox2(uv-vec2(-.48*a,.477), .5*vec2(.005,.017), v);
-    d = max(d,-v);
-    dbox2(uv-vec2(-.48*a,.462), .5*vec2(.005, .005), v);
-    d = max(d,-v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry,d));
+    dlinesegment2(vec2(.5,1.)*x, .2*c.yx-.4*iProgress*c.yx, .25*c.yx, dbeer);
+    stroke(dbeer, .095, dbeer);
+    col = mix(col, vec3(0.78,0.44,0.05), smoothstep(ry,-ry,dbeer));
     
-    // Battery Block
-    dbox2((uv-vec2(.45*a,.475))*c.xz, vec2(.035, .018), d);
-    dbox2((uv-vec2(.47*a,.475))*c.xz, vec2(.008, .01), v);
-    d = min(d,v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry,d));
-    dbox2((uv-vec2(.439*a,.475))*c.xz, .9*vec2(.015, .018), d);
-    col = mix(col, vec3(0.76,0.20,0.25), smoothstep(ry,-ry,d));
+    dlinesegment2(vec2(.5,1.)*x, .2*c.yx-.4*iProgress*c.yx, .25*c.yx, dbeer);
+    stroke(dbeer, .092, dbeer);
+    col = mix(col, vec3(0.95,0.94,0.87), smoothstep(ry,-ry,dbeer));
     
-    // Network information
-    dbox2((uv-vec2(.39*a,.466))*c.xz, vec2(.0055, .009), d);
-    dbox2((uv-vec2(.398*a,.469))*c.xz, vec2(.0055, .012), v);
-	d = min(d,v);
-    dbox2((uv-vec2(.406*a,.472))*c.xz, vec2(.0055, .015), v);
-	d = min(d,v);
-    dbox2((uv-vec2(.414*a,.475))*c.xz, vec2(.0055, .018), v);
-	d = min(d,v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry,d));
+    // stripes
+    dlinesegment2(vec2(.5,1.)*vec2(abs(x.x-.03)-.1,x.y)-.4*abs(x.x)*c.yx, .12*c.yx-.4*iProgress*c.yx, .25*c.yx, dbeer);
+    stroke(dbeer, .015, dbeer);
+    col = mix(col, vec3(1.00,1.00,1.00), smoothstep(ry,-ry,dbeer));
     
-    // Wifi
-    d = length(uv-vec2(.36*a,.46))-.0025;
-    d = min(d, abs(length(uv-vec2(.36*a,.46))-.01)-.003);
-    d = min(d, abs(length(uv-vec2(.36*a,.46))-.02)-.003);
-    d = min(d, abs(length(uv-vec2(.36*a,.46))-.03)-.003);
-    mat2 m = mat2(cos(pi/4.),-sin(pi/4.), sin(pi/4.), cos(pi/4.));
-    dbox2(m*(uv-vec2(.36*a,.5)), 2.*vec2(.015), v);
-    d = max(d,v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry,d));
-    
-    // Playback bar
-    dbox2(uv-.41*c.yx*c.xz, vec2(.47*a,.003), d);
-    col = mix(col, c.xyy, smoothstep(ry,-ry, d));
-    dbox2(uv-.41*c.yx*c.xz-.4*c.xy, vec2(.47*a-.4,.003), d);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, d));
-    
-    // Play symbol
-    dtriangle2(((uv-vec2(-.44*a,-.455))).yx*c.xz, .025, d);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, -d));
-    
-    // Next symbol
-    dtriangle2(((uv-vec2(-.4*a,-.455))).yx*c.xz, .025, d);
-    dbox2(uv-vec2(-.385*a,-.455), vec2(.003, .024), v);
-    d = min(-d,v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, d));
-    
-    // Mute symbol
-    dtriangle2(((uv-vec2(-.35*a,-.455))).yx, .025, d);
-    dbox2(uv-vec2(-.36*a,-.455), vec2(.007, .007), v);
-    d = min(-d,v);
-    d = min(d, length(uv-vec2(-.345*a,-.455))-.011);
-    dbox2(uv-vec2(-.344*a,-.455), vec2(.003, .024), v);
-    d = max(d,-v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, d));
-    
-    // Settings
-    dgear(uv-vec2(.4*a,-.455), vec2(.02,.025), 8., d);
-    d = max(d, -length(uv-vec2(.4*a,-.455))+.01);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, d));
-    
-    // Full Screen
-    vec2 y = mod(uv, .03)-.015;
-    dbox2(y, vec2(.01), d);
-    d = abs(d)-.003;
-    dbox2(uv-vec2(.44*a-.0025,-.45), vec2(.02), v);
-	d = max(d,v);
-    col = mix(col, vec3(0.92,0.89,0.84), smoothstep(ry,-ry, d));
-    
-    fragColor = vec4(clamp(col,0.0,1.0),1.0);
+    // Foam
+    dlinesegment2(vec2(.5,1.)*x, .3*c.yx, .3*c.yx, dbeer);
+    dlinesegment2(x, vec2(-.2,.3), vec2(-.2,.1), da);
+    stroke(da, .06, da);
+    stroke(dbeer, .095, dbeer);
+    smoothmin(dbeer, da, .05, dbeer);
+    float n;
+    mfnoise(x-.1*iTime,8.,800.,.35,n);
+    dbeer += .03*mix(-1.,1.,n);
+    col = mix(col, vec3(0.78,0.76,0.69), smoothstep(ry,-ry,dbeer));
+    dbeer += .01*x.y;
+    col = mix(col, vec3(0.88,0.88,0.81), smoothstep(ry,-ry,dbeer));
+    dbeer += .05*x.y;
+    col = mix(col, vec3(0.95,0.95,0.89), smoothstep(ry,-ry,dbeer));
+    dbeer += .1*x.y;
+    col = mix(col, vec3(1.00,1.00,0.95), smoothstep(ry,-ry,dbeer));
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+  	a = iResolution.x/iResolution.y;
+  	ry = 1.5/iResolution.y;
+  	vec2 uv = fragCoord/iResolution.yy-0.5*vec2(a, 1.0);
+  	vec3 col = c.yyy;
+  
+  	colorize(uv,col);
+  
+  	fragColor = vec4(col, 1.);
 }
 
 void main()
