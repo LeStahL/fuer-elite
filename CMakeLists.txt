@@ -48,14 +48,14 @@ add_custom_target(texture_packing
 
 add_custom_target(symbolization
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/gfx/
-    COMMAND "${Python3_EXECUTABLE}" symbolize.py decayingfactory.frag fogforest.frag -o symbols.h
+    COMMAND "${Python3_EXECUTABLE}" symbolize.py z10out.frag -o symbols.h
 )
 
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:demo /SUBSYSTEM:Windows  /OPT:REF  /OPT:ICF=10 /VERBOSE /NODEFAULTLIB")
 endif()
 
-add_executable(fuer-elite fe.c common.h sequence.h sfx.h pal_win32.h pal_linux.h gfx/logo210.h gfx/decayingfactory.h font/font.h gfx/text.h gfx/symbols.h gfx/load.h gfx/post.h)
+add_executable(fuer-elite fe.c )
 add_dependencies(fuer-elite minification)
 add_dependencies(fuer-elite texture_packing)
 add_dependencies(fuer-elite symbolization)

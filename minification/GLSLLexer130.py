@@ -67,6 +67,8 @@ class GLSLLexer130:
         self.rules += [ Rule.Rule("\]", "RBRACKET") ]
         self.rules += [ Rule.Rule("{", "LBRACE") ]
         self.rules += [ Rule.Rule("}", "RBRACE") ]
+        self.rules += [ Rule.Rule("[|]{2}", "OR") ]
+        self.rules += [ Rule.Rule("[&]{2}", "AND") ]
         self.rules += [ Rule.Rule("gl_FragColor", "GL_FRAGCOLOR") ]
         self.rules += [ Rule.Rule("gl_FragCoord", "GL_FRAGCOORD") ]
         self.rules += [ Rule.Rule("in", "IN_QUALIFIER") ]
@@ -87,7 +89,10 @@ class GLSLLexer130:
         self.rules += [ Rule.Rule("asinh", "ASINH") ]
         self.rules += [ Rule.Rule("acosh", "ACOSH") ]
         self.rules += [ Rule.Rule("atanh", "ATANH") ]
-        
+        self.rules += [ Rule.Rule("length", "LENGTH") ]
+        self.rules += [ Rule.Rule("return", "RETURN") ]
+        self.rules += [ Rule.Rule("smoothstep", "SMOOTHSTEP") ]
+        self.rules += [ Rule.Rule("step", "STEP") ]
         self.rules += [ Rule.Rule("[a-zA-Z_]+[a-zA-Z0-9_]*", "IDENTIFIER") ]
         self.index = 0
         self.line = 0

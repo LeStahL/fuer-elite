@@ -340,9 +340,9 @@ void draw()
     {
         if(override_index == 1)
         {
-            glUseProgram(decayingfactory_program);
-            glUniform1f(decayingfactory_iTime_location, t);
-            glUniform2f(decayingfactory_iResolution_location, w, h);
+            glUseProgram(z10out_program);
+            glUniform1f(z10out_iTime_location, t);
+            glUniform2f(z10out_iResolution_location, w, h);
         }
     }
     else
@@ -351,9 +351,9 @@ void draw()
         {
 //             printf("iTime=%le\n", t);
 //             printf("program: %d, timeloc: %d, resloc: %d\n", decayingfactory_program, decayingfactory_iTime_location, decayingfactory_iResolution_location);
-            glUseProgram(fogforest_program);
-            glUniform1f(fogforest_iTime_location, t);
-            glUniform2f(fogforest_iResolution_location, w, h);
+            glUseProgram(z10out_program);
+            glUniform1f(z10out_iTime_location, t);
+            glUniform2f(z10out_iResolution_location, w, h);
         }
         else ExitProcess(0);
     }
