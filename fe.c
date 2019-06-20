@@ -353,7 +353,7 @@ void draw()
     }
     else
     {
-        if(t < 15.)
+        if(t < 58.)
         {
             glUseProgram(z10out_program);
             glUniform1f(z10out_iTime_location, t);

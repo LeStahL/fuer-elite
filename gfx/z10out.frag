@@ -155,7 +155,7 @@ void colorize(in vec2 x, out vec3 col)
     cs = mix(cs, .3*c.xxx, sm(dsmoke));
     dsmoke += .1*x.y;
     cs = mix(cs, .4*c.xxx, sm(dsmoke));
-    col = mix(col, cs, smoothstep(5.,6., iTime));
+    col = mix(col, cs, smoothstep(30.,31., iTime));
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -167,6 +167,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   
   	colorize(uv,col);
   
+    col = mix(c.yyy, col, smoothstep(9.,10.,iTime)*(1.-smoothstep(20.,21.,iTime))
+                         +smoothstep(30.,31.,iTime)*(1.-smoothstep(40.,41.,iTime)));
+
   	fragColor = vec4(col, 1.);
 }
 

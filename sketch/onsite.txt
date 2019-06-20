@@ -1,0 +1,3 @@
+48 explosion
+6s später theme wechsel, mach 3s explosion/3s titel
+3s später techno

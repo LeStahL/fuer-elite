@@ -164,7 +164,7 @@ logo210_handle,
 	text_handle;
 
 // Demo globals
-#define duration 188.
+#define duration 96.
 double t_start = 0.,
 t_now = 0.,
 t_end = duration;
@@ -179,8 +179,8 @@ int sample_rate = 44100, channels = 2;
 double duration1 = duration; //3 min running time
 float *smusic1;
 int music1_size;
-float texs = 128;
-int block_size = 128 * 128,
+float texs = 512;
+int block_size = 512 * 512,
 nblocks1;
 unsigned int paused = 0;
 float progress = .0;
