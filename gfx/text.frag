@@ -565,7 +565,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     blendadd(old, b, 5., 999., old);
     
-    if(iTime < 48.)
+    vec4 bda;
+    
+    if(iTime < 38.)
     {
         dstring(uv+.6*c.xy, 1., .05, d); //Cream210 presents
         stroke(d, .01, d);
@@ -615,23 +617,76 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         stroke(d, .01, d);
         old = vec4(d, mix(old.gba, c.xxy, .6));
         blendadd(new,old,34.,38.,new);
-
-        dstring(uv+.6*c.xy+.2*c.yx, 16., .04, d); //prepare your lazy asses
+    }
+    else if(iTime < 58.)
+    {
+        dstring(uv+.75*c.xy, 16., .035, d); //prepare your lazy asses
         stroke(d, .01, d);
         old = vec4(d, mix(old.gba, c.xxx, .6));
-        blendadd(new,old,50.,52.,new);
-
+        blendadd(new,old,40.,44.,new);
         
-        dstring(uv+.6*c.xy+.2*c.yx, 17., .05, d); //this is
+        dstring(uv+.6*c.xy, 17., .05, d); //this is
         stroke(d, .01, d);
         old = vec4(d, mix(old.gba, c.xxy, .6));
-        blendadd(new,old,52.,54.,new);
-
+        blendadd(new,old,44.,48.,new);
         
-        dstring(uv+.6*c.xy+.2*c.yx, 18., .06, d); //für elite!!!
-        stroke(d, .01, d);
-        old = vec4(d, mix(old.gba, c.xxy, .6));
-        blendadd(new,old,54.,57.,new);
+        dstring(uv+.6*c.xy, 18., .08, d); //für elite!!!
+        stroke(d, .017, d);
+        vec3 ca = vec3(.1,.3,.6);
+        ca = fract(ca-iTime);
+        old = vec4(d, mix(old.gba, ca, .6));
+        blendadd(new,old,51.,57.,new);
+    }
+    else if(iTime < 96.)
+    {
+        float yy = .0;
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 19., .020, d); //MERCURY
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 60.,64., new);
+        
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 20., .020, d); //ATTENTION WHORE
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 64.,68., new);
+        
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 21., .020, d); //FARBRAUSCH
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 68.,72., new);
+        
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 22., .020, d); //SPACEPIGS
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 72.,76., new);
+        
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 23., .020, d); //VACUUM
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 76.,80., new);
+        
+        box(uv-vec2(.1,yy)-.03*sin(iTime+.4)*c.xy, vec2(.35,.03), bd.x);
+        bd.gba = mix(new.gba, vec3(1.00,0.65,0.00),.8);
+        dstring(uv-vec2(-.16,yy)-.03*sin(iTime+.4)*c.xy, 27., .020, d); //Schnappsgirls
+        stroke(d, .0045, d);
+        bda = vec4(d, mix(new.gba, c.yyy, .9));
+        add(bd,bda,bd);
+        blendadd(new, bd, 80.,84., new);
     }
 //     else if(iTime < 37.)
 //     {

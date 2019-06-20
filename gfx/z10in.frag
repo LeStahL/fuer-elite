@@ -43,77 +43,113 @@ float sm(in float d)
     return smoothstep(ry,-ry,d);
 }
 
+void dstar(in vec2 x, in float N, in vec2 R, out float dst)
+{
+    float d = pi/N,
+        p0 = acos(x.x/length(x)),
+        p = mod(p0, d),
+        i = mod(round((p-p0)/d),2.);
+    x = length(x)*vec2(cos(p),sin(p));
+    vec2 a = mix(R,R.yx,i),
+    	p1 = a.x*c.xy,
+        ff = a.y*vec2(cos(d),sin(d))-p1;
+   	ff = ff.yx*c.zx;
+    dst = dot(x-p1,ff)/length(ff);
+}
+
 void colorize(in vec2 x, out vec3 col)
 {
-    col = mix(vec3(0.30,0.14,0.47),vec3(0.02,0.03,0.16),.5-.5*x.y);
-    
-    float d, ind;
-    vec2 y;
-    vec3 n;
-    
-    // People partying in background
-    for(float i=8.; i>=0.; i-=1.)
+    if(iTime < 93.)
     {
-        float da;
-        y = vec2(mod(x.x-.1*i, .4)-.2, x.y)-.01*i*c.yx;
-        ind = x.x-y.x;
-        lfnoise(ind*c.xx-iTime+i, n.x);
-        lfnoise(ind*c.xx+1337.-iTime+i, n.y);
-        lfnoise(ind*c.xx+2338.-iTime+i, n.z);
-        float ra, db;
-        rand(ind*c.xx+i, ra);
-        db = length(y-.1*n.y*c.yx-.2*c.yx)-.05;
-        dlinesegment(y-.1*n.y*c.yx-.2*c.yx, vec2(.08,-.05), vec2(.1+.05*n.x,.05), d);
-        dlinesegment(y-.1*n.y*c.yx-.2*c.yx, vec2(-.08,-.05), vec2(-.1+.05*n.z,.05), da);
-        d = min(d, da);
-        stroke(d, .025, d);    
-        smoothmin(d, db, .01, d);
-        dlinesegment(y-.1*n.y*c.yx-.2*c.yx, -.1*c.yx, -(.14+.04*ra)*c.yx, da);
-        stroke(da, .07-.02*ra, da);
-        smoothmin(d, da, .1, d);
-        vec2 aa = y;
-        stroke(aa.x, -.01, aa.x);
-        dlinesegment(aa-.1*n.y*c.yx-.2*c.yx, vec2(.04,-.2),vec2(.05,-.4), da);
-        stroke(da, .03, da);
-        smoothmin(d, da, .1, d);
-        col = mix(col, vec3(0.18,0.08,0.30), sm(d));
-        stroke(d, .001, d);
-        col = mix(col, mix(vec3(0.36,0.18,0.49),vec3(0.94,0.49,0.60), i/5.), sm(d));
+        col = mix(vec3(0.30,0.14,0.47),vec3(0.02,0.03,0.16),.5-.5*x.y);
         
-        // Party lights
-        dlinesegment(x, vec2(a*n.x,1.), vec2(a*n.z,-1.), d);
-        stroke(d, -.1*(x.y-1.), d);
-        n = .5+.5+n;
-        col = mix(col, mix(col, n, .5), sm(d));
+        float d, ind;
+        vec2 y;
+        vec3 n;
+        
+        // People partying in background
+        for(float i=8.; i>=0.; i-=1.)
+        {
+            float da;
+            y = vec2(mod(x.x-.1*i, .4)-.2, x.y)-.01*i*c.yx;
+            ind = x.x-y.x;
+            lfnoise(ind*c.xx-4.*iTime+i, n.x);
+            lfnoise(ind*c.xx+1337.-4.*iTime+i, n.y);
+            lfnoise(ind*c.xx+2338.-4.*iTime+i, n.z);
+            float ra, db;
+            rand(ind*c.xx+i, ra);
+            db = length(y-.1*n.y*c.yx-.2*c.yx)-.05;
+            dlinesegment(y-.1*n.y*c.yx-.2*c.yx, vec2(.08,-.05), vec2(.1+.05*n.x,.05), d);
+            dlinesegment(y-.1*n.y*c.yx-.2*c.yx, vec2(-.08,-.05), vec2(-.1+.05*n.z,.05), da);
+            d = min(d, da);
+            stroke(d, .025, d);    
+            smoothmin(d, db, .01, d);
+            dlinesegment(y-.1*n.y*c.yx-.2*c.yx, -.1*c.yx, -(.14+.04*ra)*c.yx, da);
+            stroke(da, .07-.02*ra, da);
+            smoothmin(d, da, .1, d);
+            vec2 aa = y;
+            stroke(aa.x, -.01, aa.x);
+            dlinesegment(aa-.1*n.y*c.yx-.2*c.yx, vec2(.04,-.2),vec2(.05,-.4), da);
+            stroke(da, .03, da);
+            smoothmin(d, da, .1, d);
+            col = mix(col, vec3(0.18,0.08,0.30), sm(d));
+            stroke(d, .001, d);
+            col = mix(col, mix(vec3(0.36,0.18,0.49),vec3(0.94,0.49,0.60), i/5.), sm(d));
+            
+            // Party lights
+            dlinesegment(x, vec2(a*n.x,1.), vec2(a*n.z,-1.), d);
+            stroke(d, -.1*(x.y-1.), d);
+            n = .5+.5+n;
+            col = mix(col, mix(col, n, .5), sm(d));
+        }
+        
+        // Bar
+        dbox(x+.3*c.yx, vec2(.5*a, .1), d);
+        col = mix(col, vec3(0.10,0.07,0.32), sm(d));
+        dbox(x+.5*c.yx, vec2(.5*a, .15), d);
+        col = mix(col, vec3(0.02,0.01,0.17), sm(d));
+        
+        // Alcohol
+        y = vec2(mod(x.x-5.e-4*floor(iTime/.375), .1)-.05, x.y);
+        ind = x.x-y.x;
+        rand(ind*c.xx, n.x);
+        rand(ind*c.xx+1337., n.y);
+        rand(ind*c.xx+2338., n.z);
+        n = mix(n, .5+.5*n, n);
+        n = clamp(n, 0.,1.);
+        float r = .03, h=.06;
+        dbox(y+.2*c.yx+.1*n.y*c.yx, vec2(r,.5*h), d);
+        d = min(d, length(y+.2*c.yx+.1*n.y*c.yx+.5*h*c.yx)-r);
+        col = mix(col, n, sm(d));
+        d = length(y+.2*c.yx+.1*n.y*c.yx-.5*h*c.yx)-r;
+        col = mix(col, .7*n, sm(d));
+        
+        // 210 Logo on bar
+        dlogo210(x+.425*c.yx, .04, d);
+        stroke(d, .015, d);
+        col = mix(col, mix(c.xyy,c.xxy, clamp((x.y+.465)/.08,0.,1.)), sm(d));
+        stroke(d-.005, .002, d);
+        col = mix(col, c.xxy, sm(d));
+        
+        if(iTime > 84.)
+        {
+            col = mix(col, c.yyy, fract(iTime/.375));
+        }
     }
-    
-    // Bar
-    dbox(x+.3*c.yx, vec2(.5*a, .1), d);
-    col = mix(col, vec3(0.10,0.07,0.32), sm(d));
-    dbox(x+.5*c.yx, vec2(.5*a, .15), d);
-    col = mix(col, vec3(0.02,0.01,0.17), sm(d));
-    
-    // Alcohol
-    y = vec2(mod(x.x-5.e-4*floor(iTime), .1)-.05, x.y);
-    ind = x.x-y.x;
-    rand(ind*c.xx, n.x);
-    rand(ind*c.xx+1337., n.y);
-    rand(ind*c.xx+2338., n.z);
-    n = mix(n, .5+.5*n, n);
-    n = clamp(n, 0.,1.);
-    float r = .03, h=.06;
-    dbox(y+.2*c.yx+.1*n.y*c.yx, vec2(r,.5*h), d);
-    d = min(d, length(y+.2*c.yx+.1*n.y*c.yx+.5*h*c.yx)-r);
-    col = mix(col, n, sm(d));
-    d = length(y+.2*c.yx+.1*n.y*c.yx-.5*h*c.yx)-r;
-    col = mix(col, .7*n, sm(d));
-    
-    // 210 Logo on bar
-    dlogo210(x+.425*c.yx, .04, d);
-    stroke(d, .015, d);
-    col = mix(col, mix(c.xyy,c.xxy, clamp((x.y+.465)/.08,0.,1.)), sm(d));
-    stroke(d-.005, .002, d);
-    col = mix(col, c.xxy, sm(d));
+    else
+    {
+        col = c.yyy;
+        for(float r = 0.; r < mix(.1,1.,clamp(iTime,0.,1.)); r += .2)
+        {
+            float ri = fract(r + iTime);
+            float d;
+            dstar(x,12.,vec2(.5*ri, ri),d);
+            stroke(d, .05, d);
+            col = mix(col, c.xyx, sm(d));
+            stroke(d-.02,.01,d);
+            col = mix(col, c.yxx, sm(d));
+        }
+    }
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )

@@ -353,7 +353,7 @@ void draw()
     }
     else
     {
-        if(t < 58.)
+        if(t < 57.)
         {
             glUseProgram(z10out_program);
             glUniform1f(z10out_iTime_location, t);
@@ -362,7 +362,7 @@ void draw()
         else if(t < 9000.)
         {
             glUseProgram(z10in_program);
-            glUniform1f(z10in_iTime_location, t-15.);
+            glUniform1f(z10in_iTime_location, t);
             glUniform2f(z10in_iResolution_location, w, h);
         }
 
