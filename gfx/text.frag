@@ -539,44 +539,44 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     a = iResolution.x/iResolution.y;
     vec2 uv = fragCoord/iResolution.yy-0.5*vec2(a, 1.0);
     
-//     float d;
+    float d;
 //     
     vec4 old = vec4(-1.,texture(iChannel0, fragCoord/iResolution.xy).rgb), new = old; // Scene
 //     
-//     // Display time
-//     vec4 b = vec4(1., vec3(0.99,0.64,0.02)), bd = vec4(1., .5*vec3(0.99,0.64,0.02));
-//     box(uv-vec2(-.48,.45)-.03*sin(iTime)*c.xy, vec2(.2,.02), b.x);    
-//     stroke(b.x, .001, bd.x);
-//     add(b, bd, b);
-//     box(uv-vec2(-.08,.45)-.03*sin(iTime)*c.xy, vec2(.2,.02), bd.x);
-//     bd.gba = vec3(0.60,0.06,0.00);
-//     add(b, bd, b);
-//     stroke(bd.x, .001, bd.x);
-//     add(b, bd, b);
-//     dfloat(uv-vec2(-.63,.45)-.03*sin(iTime)*c.xy, iTime, .018, bd.x);
-//     stroke(bd.x, .004, bd.x);
-//     add(b, bd, b);
-//     //dfloat(uv-vec2(-.23,.45)-.03*sin(iTime)*c.xy, iExecutableSize, .018, bd.x);
-//     dstring(uv-vec2(-.225,.45)-.03*sin(iTime)*c.xy, 6., .018, bd.x);
-//     stroke(bd.x, .004, bd.x);
-//     bd.gba = vec3(0.99,0.64,0.02);
-//     add(b, bd, b);
-//     b.gba = mix(old.gba, b.gba, .8);
-//     
-//     blendadd(old, b, 5., 999., old);
-//     
-//     if(iTime < 15.)
-//     {
-//         dstring(uv+.6*c.xy, 3., .05, d); // Team210 present
-//         stroke(d, .01, d);
-//         new = vec4(d, mix(old.gba, c.xxx, .6));
-//         blendadd(old,new,5.,13.,new);
-//         
-//         dstring(uv+.6*c.xy+.1*c.yx, 4., .03, d); // A production made of joy
-//         stroke(d, .005, d);
-//         old = vec4(d, mix(old.gba, c.xxx, .6));
-//         blendadd(new,old,7.,13.,new);
-//     }
+    // Display time
+    vec4 b = vec4(1., vec3(0.99,0.64,0.02)), bd = vec4(1., .5*vec3(0.99,0.64,0.02));
+    box(uv-vec2(-.48,.45)-.03*sin(iTime)*c.xy, vec2(.2,.02), b.x);    
+    stroke(b.x, .001, bd.x);
+    add(b, bd, b);
+    box(uv-vec2(-.08,.45)-.03*sin(iTime)*c.xy, vec2(.2,.02), bd.x);
+    bd.gba = vec3(0.60,0.06,0.00);
+    add(b, bd, b);
+    stroke(bd.x, .001, bd.x);
+    add(b, bd, b);
+    dfloat(uv-vec2(-.63,.45)-.03*sin(iTime)*c.xy, iTime, .018, bd.x);
+    stroke(bd.x, .004, bd.x);
+    add(b, bd, b);
+//     dfloat(uv-vec2(-.23,.45)-.03*sin(iTime)*c.xy, iExecutableSize, .018, bd.x);
+    dstring(uv-vec2(-.225,.45)-.03*sin(iTime)*c.xy, 1., .018, bd.x);
+    stroke(bd.x, .004, bd.x);
+    bd.gba = vec3(0.99,0.64,0.02);
+    add(b, bd, b);
+    b.gba = mix(old.gba, b.gba, .8);
+    
+    blendadd(old, b, 5., 999., old);
+    
+    if(iTime < 15.)
+    {
+        dstring(uv+.6*c.xy, 3., .05, d); // Team210 present
+        stroke(d, .01, d);
+        new = vec4(d, mix(old.gba, c.xxx, .6));
+        blendadd(old,new,5.,13.,new);
+        
+        dstring(uv+.6*c.xy+.1*c.yx, 4., .03, d); // A production made of joy
+        stroke(d, .005, d);
+        old = vec4(d, mix(old.gba, c.xxx, .6));
+        blendadd(new,old,7.,13.,new);
+    }
 //     else if(iTime < 37.)
 //     {
 //         vec4 c0, c2;
@@ -715,7 +715,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 //         add(bd,bda,bd);
 //         blendadd(old, bd, 170.,177., new);
 //     }
-//     else new = old;
+    else 
+    {
+        new = old;
+    }
     
     fragColor = vec4(new.gba, 1.);
 }

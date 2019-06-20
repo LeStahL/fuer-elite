@@ -344,17 +344,28 @@ void draw()
             glUniform1f(z10out_iTime_location, t);
             glUniform2f(z10out_iResolution_location, w, h);
         }
+        else if(override_index == 2)
+        {
+            glUseProgram(z10in_program);
+            glUniform1f(z10in_iTime_location, t);
+            glUniform2f(z10in_iResolution_location, w, h);
+        }
     }
     else
     {
-        if(t < 9000.)
+        if(t < 15.)
         {
-//             printf("iTime=%le\n", t);
-//             printf("program: %d, timeloc: %d, resloc: %d\n", decayingfactory_program, decayingfactory_iTime_location, decayingfactory_iResolution_location);
             glUseProgram(z10out_program);
             glUniform1f(z10out_iTime_location, t);
             glUniform2f(z10out_iResolution_location, w, h);
         }
+        else if(t < 9000.)
+        {
+            glUseProgram(z10in_program);
+            glUniform1f(z10in_iTime_location, t-15.);
+            glUniform2f(z10in_iResolution_location, w, h);
+        }
+
         else ExitProcess(0);
     }
     quad();

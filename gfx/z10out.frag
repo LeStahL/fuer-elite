@@ -48,6 +48,8 @@ void colorize(in vec2 x, out vec3 col)
     col = vec3(0.12,0.13,0.16);
     float d;
     
+    x += .02+.02*fract(iTime)*fract(iTime)*x;
+    
     // Wall concrete
     dbox(x-.1*c.yx, vec2(.5*a, .3), d);
     col = mix(col, vec3(0.48,0.37,0.33), sm(d));

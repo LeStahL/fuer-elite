@@ -36,7 +36,7 @@ else()
         COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/load.h" "${PROJECT_SOURCE_DIR}/gfx/load.frag" --no-minification
         COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/post.h" "${PROJECT_SOURCE_DIR}/gfx/post.frag" --no-minification
         COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/logo210.h" "${PROJECT_SOURCE_DIR}/gfx/logo210.frag" --no-minification
-        COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/decayingfactory.h" "${PROJECT_SOURCE_DIR}/gfx/decayingfactory.frag" --no-minification
+#         COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/decayingfactory.h" "${PROJECT_SOURCE_DIR}/gfx/decayingfactory.frag" --no-minification
         COMMAND "${Python3_EXECUTABLE}" shader-compressor.py -o "${PROJECT_SOURCE_DIR}/gfx/text.h" "${PROJECT_SOURCE_DIR}/gfx/text.frag" --no-minification
     )
 endif()
@@ -48,7 +48,7 @@ add_custom_target(texture_packing
 
 add_custom_target(symbolization
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/gfx/
-    COMMAND "${Python3_EXECUTABLE}" symbolize.py z10out.frag -o symbols.h
+    COMMAND "${Python3_EXECUTABLE}" symbolize.py z10out.frag z10in.frag -o symbols.h
 )
 
 if(MSVC)
