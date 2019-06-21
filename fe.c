@@ -33,11 +33,15 @@ void load_demo()
 	glShaderSource(load_handle, 1, (GLchar **)&load_frag, &load_size);
 	glCompileShader(load_handle);
 	printf("---> Load shader:\n");
+#ifdef DEBUG
 	debug(load_handle);
+#endif
 	glAttachShader(load_program, load_handle);
 	glLinkProgram(load_program);
 	printf("---> Load Program:\n");
+#ifdef DEBUG
 	debugp(load_program);
+#endif
 	glUseProgram(load_program);
 	load_progress_location = glGetUniformLocation(load_program, LOAD_VAR_IPROGRESS);
 	load_time_location = glGetUniformLocation(load_program, LOAD_VAR_ITIME);
@@ -52,11 +56,15 @@ void load_demo()
 	glShaderSource(post_handle, 1, (GLchar **)&post_frag, &post_size);
 	glCompileShader(post_handle);
 	printf("---> Post shader:\n");
+#ifdef DEBUG
 	debug(post_handle);
+#endif
 	glAttachShader(post_program, post_handle);
 	glLinkProgram(post_program);
 	printf("---> Post Program:\n");
+#ifdef DEBUG
 	debugp(post_program);
+#endif
 	glUseProgram(post_program);
 	post_channel0_location = glGetUniformLocation(post_program, POST_VAR_ICHANNEL0);
 	post_fsaa_location = glGetUniformLocation(post_program, POST_VAR_IFSAA);
@@ -178,11 +186,15 @@ unsigned long __stdcall LoadMusicThread( void *lpParam)
     glShaderSource(sfx_handle, 1, (GLchar **)&sfx_frag, &sfx_size);
     glCompileShader(sfx_handle);
     printf("---> SFX shader:\n");
+#ifdef DEBUG
     debug(sfx_handle);
+#endif
     glAttachShader(sfx_program, sfx_handle);
     glLinkProgram(sfx_program);
     printf("---> SFX program:\n");
+#ifdef DEBUG
     debugp(sfx_program);
+#endif
     glUseProgram(sfx_program);
     sfx_samplerate_location = glGetUniformLocation(sfx_program, SFX_VAR_ISAMPLERATE);
     sfx_blockoffset_location = glGetUniformLocation(sfx_program, SFX_VAR_IBLOCKOFFSET);
@@ -206,11 +218,15 @@ unsigned long __stdcall LoadLogo210Thread( void * lpParam)
     glShaderSource(logo210_handle, 1, (GLchar **)&logo210_frag, &logo210_size);
     glCompileShader(logo210_handle);
     printf("---> Logo 210 shader:\n");
+#ifdef DEBUG
     debug(logo210_handle);
+#endif
     glAttachShader(logo210_program, logo210_handle);
     glLinkProgram(logo210_program);
     printf("---> Logo 210 program:\n");
+#ifdef DEBUG
     debugp(logo210_program);
+#endif
     glUseProgram(logo210_program);
     logo210_time_location =  glGetUniformLocation(logo210_program, LOGO210_VAR_ITIME);
     logo210_resolution_location = glGetUniformLocation(logo210_program, LOGO210_VAR_IRESOLUTION);
@@ -252,11 +268,15 @@ unsigned long __stdcall LoadTextThread(void * lpParam)
     glShaderSource(text_handle, 1, (GLchar **)&text_frag, &text_size);
     glCompileShader(text_handle);
     printf("---> Text shader:\n");
+#ifdef DEBUG
     debug(text_handle);
+#endif
     glAttachShader(text_program, text_handle);
     glLinkProgram(text_program);
     printf("---> Text program:\n");
+#ifdef DEBUG
     debugp(text_program);
+#endif
     glUseProgram(text_program);
     text_time_location =  glGetUniformLocation(text_program, TEXT_VAR_ITIME);
     text_resolution_location = glGetUniformLocation(text_program, TEXT_VAR_IRESOLUTION);
